@@ -1,0 +1,23 @@
+<html>
+<head>
+<script type="text/javascript">
+    function httpGetAsync(url, callback) {
+        var json = new XMLHttpRequest();
+        json.onreadystatechange = function() {
+            if (json.readyState == 4 && json.status == 200)
+                callback(json.responseText)
+        }
+
+        json.open("GET", url, true);
+        json.send(null)
+    }
+
+    httpGetAsync('http://127.0.0.1:5000/store', function(response) {
+        alert(response);
+    } )
+    </script>
+</head>
+<body>
+    <p>hello david</p>
+</body>
+</html>
