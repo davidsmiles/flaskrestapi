@@ -9,30 +9,7 @@ app = Flask(__name__)
 # the browser will use POST to send us data
 # and use GET to receive data
 
-stores = [
-    {
-        'name': 'teclado',
-        'items': [
-            {
-                'name': 'REST API with Python and Flask',
-                'price': 11.99
-            }
-        ]
-    },
-    {
-        'name': 'shitty',
-        'items': [
-            {
-                'name': 'Advanced REST API with Python and Flask',
-                'price': 12.99
-            },
-            {
-                'name': 'Game of Thrones',
-                'price': 15.00
-            }
-        ]
-    }
-]
+stores = []
 
 
 # POST /store {name}
