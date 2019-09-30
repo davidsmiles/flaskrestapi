@@ -46,8 +46,7 @@ def create_store():
         }
         stores.append(new_store)
         return jsonify(new_store)
-    else:
-        return jsonify({'message': f"no name value sent with request"})
+    return jsonify({'message': f"no name value sent with request"})
 
 
 # GET /store/<string:name>
@@ -56,8 +55,7 @@ def get_store(name):
     for store in stores:
         if store['name'] == name:
             return jsonify(store)
-    else:
-        return jsonify({'message': f"store with name '{name}' not found."})
+    return jsonify({'message': f"store with name '{name}' not found."})
 
 
 # GET /store
@@ -74,8 +72,7 @@ def create_item_in_store(name):
         if store['name'] == name:
             store['items'].append(item_data)
             return jsonify(store['items'])
-    else:
-        return jsonify({'message': f"store with name '{name}' not found."})
+    return jsonify({'message': f"store with name '{name}' not found."})
 
 
 # GET /store/<string:name>/item
@@ -84,8 +81,7 @@ def get_items_in_store(name):
     for store in stores:
         if store['name'] == name:
             return jsonify(store['items'])
-    else:
-        return jsonify({'message': f"store with name '{name}' not found."})
+    return jsonify({'message': f"store with name '{name}' not found."})
 
 
 if __name__ == '__main__':
