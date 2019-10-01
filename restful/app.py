@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
 from restful.security import authenticate, identity
 
@@ -39,11 +39,18 @@ class Item(Resource):
             error_msg = {'message': f'item with name {name} already exists'}
             return error_msg, 400
 
-        data = request.get_json(silent=True)
-        price = data['price']
+        parser = reqparse.RequestParser()
+        parser.add_argument('price',
+                            type=float,
+                            required=True,
+                            help='This field cannot be left blank')
+
+        data = parser.parse_args()
+        price = data.get('price')
+
         item = {
             'name': name,
-            'price': price if price else 0.0
+            'price': price
         }
         items.append(item)
         return item, 201
@@ -56,18 +63,22 @@ class Item(Resource):
         }, 200
 
     def put(self, name):
-        global items
-        data = request.get_json(silent=True)
+        parser = reqparse.RequestParser()
+        parser.add_argument('price',
+                            type=float,
+                            required=True,
+                            help='This field cannot be left blank')
+
+        data = parser.parse_args()
         price = data.get('price')
 
         match = next((item for item in items if item['name'] == name), None)
-        if items and match: # if there are items and there's a match, then update
-            old = match['price']
-            match['price'] = price if price else old
+        if match: # if there are items and there's a match, then update
+            match.update(data)
         else:               # otherwise just append
             item = {
                 'name': name,
-                'price': price if price else 0
+                'price': price
             }
             items.append(item)
         return {'message': 'item has been put'}, 201
