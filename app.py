@@ -20,10 +20,11 @@ def home():
 # POST /store {name}
 @app.route('/store', methods=['POST'])
 def create_store():
-    form = {**request.form}
+    form = request.get_json()
+    print(form)
     if form.get('name'):
         new_store = {
-            'name': form.get('name'),
+            'name': form['name'],
             'items': []
         }
         stores.append(new_store)
@@ -49,7 +50,7 @@ def get_stores():
 # POST /store/<string:name>/item {name, price}
 @app.route('/store/<string:name>/item', methods=['POST'])
 def create_item_in_store(name):
-    item_data = {**request.form}
+    item_data = request.get_json()
     for store in stores:
         if store['name'] == name:
             store['items'].append(item_data)
