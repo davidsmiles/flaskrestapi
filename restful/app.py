@@ -3,14 +3,33 @@ from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
 from restful.security import authenticate, identity
 
+from datetime import timedelta
+
 app = Flask(__name__)
 app.secret_key = 'david'
 api = Api(app)
 
+app.config['JWT_AUTH_URL_RULE'] = '/login'
 jwt = JWT(app, authenticate, identity)
+app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
+app.config['JWT_AUTH_USERNAME_KEY'] = 'username'
 
 items = []
 
+@jwt.auth_request_handler
+def customized_response_handler(access_token, identity):
+    return jsonify({
+        'token': access_token.decode('utf-8'),
+        'userid': identity.id
+    })
+
+
+# @jwt.jwt_error_handler
+# def customized_error_handler(error):
+#     return jsonify({
+#         'message': error.description,
+#         'code': error.code
+#     })
 
 class ItemList(Resource):
 
@@ -20,6 +39,12 @@ class ItemList(Resource):
 
 
 class Item(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('price',
+                        type=float,
+                        required=True,
+                        help='This field cannot be left blank')
 
     def get(self, name):
         item = next((item for item in items if item['name'] == name), None)
@@ -39,13 +64,7 @@ class Item(Resource):
             error_msg = {'message': f'item with name {name} already exists'}
             return error_msg, 400
 
-        parser = reqparse.RequestParser()
-        parser.add_argument('price',
-                            type=float,
-                            required=True,
-                            help='This field cannot be left blank')
-
-        data = parser.parse_args()
+        data = Item.parser.parse_args()
         price = data.get('price')
 
         item = {
@@ -63,13 +82,7 @@ class Item(Resource):
         }, 200
 
     def put(self, name):
-        parser = reqparse.RequestParser()
-        parser.add_argument('price',
-                            type=float,
-                            required=True,
-                            help='This field cannot be left blank')
-
-        data = parser.parse_args()
+        data = Item.parser.parse_args()
         price = data.get('price')
 
         match = next((item for item in items if item['name'] == name), None)
